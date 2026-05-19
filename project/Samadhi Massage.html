@@ -1,0 +1,1256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Samādhi Massage by Victor</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Palette — sage / forest / warm off-white */
+    --bg:        #F4F1E8;
+    --bg-mist:  #E8EEE2;
+    --bg-deep:  #DCE4D4;
+    --ink:       #1E241B;
+    --ink-soft:  #3A4135;
+    --muted:     #6E7868;
+    --rule:      rgba(30, 36, 27, 0.14);
+    --green:     oklch(0.45 0.045 145);
+    --green-deep:oklch(0.32 0.05 145);
+    --green-mist:oklch(0.92 0.025 135);
+    --accent:    oklch(0.55 0.07 130);
+
+    --serif: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+    --sans:  "Manrope", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono:  "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+    --maxw: 1240px;
+    --gutter: clamp(20px, 4vw, 56px);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grain over everything */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Soft, slow ambient glow blobs */
+  .ambient {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+  }
+  .ambient i {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    animation: drift 38s ease-in-out infinite alternate;
+  }
+  .ambient i:nth-child(1) { width: 60vw; height: 60vw; left: -15vw; top: -15vw;
+    background: radial-gradient(circle, oklch(0.92 0.04 140), transparent 70%); }
+  .ambient i:nth-child(2) { width: 50vw; height: 50vw; right: -10vw; top: 40vh;
+    background: radial-gradient(circle, oklch(0.88 0.05 130), transparent 70%);
+    animation-delay: -12s; }
+  .ambient i:nth-child(3) { width: 40vw; height: 40vw; left: 20vw; bottom: -10vw;
+    background: radial-gradient(circle, oklch(0.94 0.03 100), transparent 70%);
+    animation-delay: -22s; }
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, -30px) scale(1.08); }
+  }
+
+  /* Lotus mandala motifs — built from primitives, rotated radially */
+  .lotus { position: absolute; pointer-events: none; }
+  .lotus svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .lotus .rotor {
+    transform-origin: 200px 200px;
+    animation: spin var(--spin-dur, 240s) linear infinite;
+  }
+  .lotus .petal { fill: none; stroke: var(--green-deep); stroke-width: 1; stroke-linejoin: round; stroke-linecap: round; }
+  .lotus .petal.thin { stroke-width: 0.7; }
+  .lotus .dot { fill: var(--green-deep); }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Background lotus behind the hero */
+  .lotus-bg {
+    top: -22vh; right: -34vw;
+    width: 130vh; height: 130vh;
+    opacity: 0.16;
+    z-index: 0;
+  }
+  .lotus-bg.left {
+    left: -36vw; right: auto;
+    top: auto; bottom: -28vh;
+    opacity: 0.13;
+  }
+  @media (max-width: 760px) {
+    .lotus-bg { width: 140vw; height: 140vw; right: -50vw; top: -10vh; opacity: 0.12; }
+  }
+
+  /* Section-divider ornaments */
+  .lotus-ornament {
+    position: relative; width: 92px; height: 92px;
+    margin: 0 auto;
+    opacity: 0.55;
+  }
+  .lotus-ornament svg .petal { stroke-width: 0.7; }
+  .ornament-row {
+    display: flex; align-items: center; gap: 24px;
+    justify-content: center;
+    padding: clamp(40px, 6vh, 80px) var(--gutter);
+  }
+  .ornament-row .line {
+    flex: 1; max-width: 180px; height: 1px;
+    background: var(--rule);
+  }
+
+  /* Decorative lotus inside the dark mobile block */
+  .lotus-block {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 580px; height: 580px;
+    opacity: 0.16;
+  }
+  .lotus-block .petal { stroke: oklch(0.85 0.06 140); }
+  .lotus-block .dot { fill: oklch(0.85 0.06 140); }
+
+  /* Lotus in the final CTA */
+  .lotus-final {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92vh; height: 92vh;
+    opacity: 0.10;
+    z-index: 0;
+  }
+
+  .lotus-mobile-corner {
+    position: absolute;
+    top: -160px; right: -160px;
+    width: 420px; height: 420px;
+    opacity: 0.12;
+    z-index: 0;
+  }
+
+  /* When motion is off, freeze the mandalas */
+  .no-motion .lotus .rotor { animation: none !important; }
+  .lotus.hidden { display: none; }
+
+  /* Typography */
+  h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; line-height: 1.05; margin: 0; color: var(--ink); }
+  h1 { font-size: clamp(56px, 9vw, 132px); font-weight: 300; }
+  h2 { font-size: clamp(36px, 5.2vw, 68px); font-weight: 300; }
+  h3 { font-size: clamp(22px, 2vw, 28px); font-weight: 400; }
+  p  { margin: 0; color: var(--ink-soft); }
+  em { font-style: italic; font-family: var(--serif); font-size: 1.08em; color: var(--green-deep); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* Layout primitives */
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+
+  section { position: relative; padding: clamp(96px, 14vh, 160px) 0; }
+  section.tight { padding: clamp(64px, 10vh, 120px) 0; }
+  .rule { height: 1px; background: var(--rule); width: 100%; margin: 0; border: 0; }
+
+  /* Nav */
+  nav.top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 18px var(--gutter);
+    display: flex; align-items: center; justify-content: space-between;
+    transition: background .4s ease, backdrop-filter .4s ease, padding .4s ease;
+  }
+  nav.top.scrolled {
+    background: rgba(244, 241, 232, 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    padding: 12px var(--gutter);
+    border-bottom: 1px solid var(--rule);
+  }
+  nav.top .mark {
+    font-family: var(--serif); font-size: 22px; font-style: italic; font-weight: 400;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  nav.top .mark span { font-style: normal; font-size: 13px; color: var(--muted); margin-left: 6px; letter-spacing: 0.18em; text-transform: uppercase; font-family: var(--mono);}
+  nav.top ul { list-style: none; display: flex; gap: 28px; padding: 0; margin: 0; align-items: center; }
+  nav.top ul a {
+    font-size: 13px; color: var(--ink-soft); text-decoration: none; font-weight: 500;
+    letter-spacing: 0.04em;
+    position: relative;
+  }
+  nav.top ul a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+    background: var(--green-deep); transform: scaleX(0); transform-origin: left;
+    transition: transform .3s ease;
+  }
+  nav.top ul a:hover::after { transform: scaleX(1); }
+  nav.top .book-cta {
+    padding: 9px 18px; border-radius: 999px;
+    background: var(--ink); color: var(--bg);
+    font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease;
+  }
+  nav.top .book-cta:hover { background: var(--green-deep); transform: translateY(-1px); }
+  @media (max-width: 760px) {
+    nav.top ul li:not(.cta-li) { display: none; }
+  }
+
+  /* Hero */
+  .hero { min-height: 100vh; display: grid; align-items: end; padding-top: 140px; padding-bottom: 80px; position: relative; overflow: hidden; }
+  .hero .wrap { position: relative; z-index: 2; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 56px;
+    align-items: end;
+  }
+  .hero-headline {
+    display: grid; gap: 14px;
+  }
+  .hero-headline .word-row {
+    display: flex; align-items: baseline; gap: 0.18em;
+    flex-wrap: wrap;
+  }
+  .hero-headline em.in-line { font-size: 1em; line-height: 1; }
+  .hero-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 720px;
+    margin-top: 8px;
+  }
+  .hero-meta p { max-width: 36ch; font-size: 15.5px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    appearance: none; border: 0; text-decoration: none; cursor: pointer;
+    padding: 16px 28px; border-radius: 999px;
+    font-family: var(--sans); font-size: 14px; font-weight: 500; letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform .2s ease, background .2s ease, color .2s ease;
+  }
+  .btn.primary { background: var(--ink); color: var(--bg); }
+  .btn.primary:hover { background: var(--green-deep); transform: translateY(-2px); }
+  .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); }
+  .btn.ghost:hover { box-shadow: inset 0 0 0 1px var(--ink); transform: translateY(-2px); }
+  .btn .arr { width: 14px; height: 14px; }
+
+  /* Scroll cue */
+  .scroll-cue {
+    position: absolute; left: var(--gutter); bottom: 32px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-cue .line {
+    width: 56px; height: 1px; background: var(--ink-soft); position: relative; overflow: hidden;
+  }
+  .scroll-cue .line::after {
+    content: ""; position: absolute; inset: 0; background: var(--bg);
+    animation: cueSlide 2.4s ease-in-out infinite;
+  }
+  @keyframes cueSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  /* Hero image plate */
+  .hero-plate {
+    position: absolute; top: 0; right: 0;
+    width: 38vw; height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .hero-plate image-slot {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    transform: translateY(var(--parallax, 0px));
+    will-change: transform;
+    pointer-events: auto;
+  }
+  @media (max-width: 900px) { .hero-plate { display: none; } }
+
+  /* Image placeholder */
+  .ph {
+    position: relative; overflow: hidden;
+    background:
+      repeating-linear-gradient(135deg,
+        oklch(0.88 0.03 140) 0 14px,
+        oklch(0.84 0.04 140) 14px 28px);
+    color: oklch(0.30 0.05 145);
+  }
+  .ph::after {
+    content: attr(data-label);
+    position: absolute; left: 14px; bottom: 12px;
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: oklch(0.28 0.06 145); opacity: 0.78;
+  }
+  .ph.dim {
+    background:
+      repeating-linear-gradient(135deg,
+        oklch(0.78 0.03 140) 0 14px,
+        oklch(0.74 0.04 140) 14px 28px);
+  }
+
+  /* Philosophy */
+  .philosophy {
+    background: var(--bg-mist);
+  }
+  .philosophy .pull {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.25;
+    max-width: 22ch;
+    margin: 0;
+    color: var(--ink);
+  }
+  .philosophy .pull em { font-size: 1em; }
+  .philosophy-grid {
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+  }
+  @media (max-width: 860px) { .philosophy-grid { grid-template-columns: 1fr; } }
+  .philosophy .meaning {
+    display: grid; gap: 18px;
+    font-size: 16px;
+  }
+  .philosophy .meaning p { max-width: 44ch; }
+  .sanskrit {
+    font-family: var(--serif); font-style: italic; font-size: 18px; color: var(--green-deep);
+  }
+
+  /* Section header */
+  .sec-head {
+    display: grid; grid-template-columns: 1fr auto; gap: 24px;
+    align-items: end; margin-bottom: 64px;
+  }
+  .sec-head h2 { max-width: 14ch; }
+  .sec-head .note {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); text-align: right; max-width: 24ch;
+  }
+  @media (max-width: 700px) { .sec-head { grid-template-columns: 1fr; } .sec-head .note { text-align: left; } }
+
+  /* Services */
+  .services-list {
+    display: grid; gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .service {
+    display: grid;
+    grid-template-columns: 60px 1.2fr 2fr auto;
+    gap: 32px;
+    padding: 32px 0;
+    align-items: baseline;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    position: relative;
+    transition: padding-left .3s ease;
+  }
+  .service:hover { padding-left: 16px; }
+  .service .num {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; color: var(--muted);
+    padding-top: 8px;
+  }
+  .service .name {
+    font-family: var(--serif); font-size: clamp(26px, 2.6vw, 38px); font-weight: 400; line-height: 1.1;
+  }
+  .service .name em { display: block; font-size: 14px; font-family: var(--mono); font-style: normal; color: var(--muted); letter-spacing: 0.16em; margin-top: 8px; text-transform: uppercase;}
+  .service .desc { color: var(--ink-soft); font-size: 15px; max-width: 52ch; padding-top: 10px; }
+  .service .price { text-align: right; font-family: var(--serif); font-size: 22px; }
+  .service .price em { display: block; font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--muted); margin-top: 6px; text-transform: uppercase;}
+  .service::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--green-deep);
+    transform: scaleY(0); transform-origin: top; transition: transform .35s ease;
+  }
+  .service:hover::before { transform: scaleY(1); }
+  @media (max-width: 760px) {
+    .service { grid-template-columns: 36px 1fr auto; gap: 16px; padding: 24px 0; }
+    .service .desc { grid-column: 2 / -1; }
+  }
+
+  /* Mobile massage callout */
+  .mobile-block {
+    background: var(--green-deep);
+    color: var(--bg);
+    border-radius: 28px;
+    padding: clamp(48px, 7vw, 96px);
+    position: relative;
+    overflow: hidden;
+  }
+  .mobile-block > .mobile-grid { position: relative; z-index: 1; }
+  .mobile-block h2 { color: var(--bg); }
+  .mobile-block p { color: rgba(244, 241, 232, 0.78); }
+  .mobile-grid {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 64px; align-items: center;
+  }
+  @media (max-width: 860px) { .mobile-grid { grid-template-columns: 1fr; } }
+  .mobile-block .eyebrow { color: oklch(0.85 0.04 140); }
+  .mobile-bullets { display: grid; gap: 18px; }
+  .mobile-bullets li {
+    list-style: none; padding-left: 28px; position: relative;
+    font-size: 15px;
+    color: rgba(244, 241, 232, 0.86);
+    line-height: 1.45;
+  }
+  .mobile-bullets li::before {
+    content: ""; position: absolute; left: 0; top: 9px;
+    width: 14px; height: 1px; background: oklch(0.78 0.06 140);
+  }
+  .mobile-block .btn.primary { background: var(--bg); color: var(--ink); }
+  .mobile-block .btn.primary:hover { background: oklch(0.88 0.04 140); }
+  .mobile-block .deco {
+    position: absolute; right: -80px; bottom: -80px; width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid oklch(0.55 0.05 140);
+    opacity: 0.35;
+  }
+  .mobile-block .deco::after {
+    content: ""; position: absolute; inset: 40px;
+    border-radius: 50%; border: 1px solid oklch(0.55 0.05 140);
+  }
+
+  /* About */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+  }
+  @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; } }
+  .about-portrait {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    border-radius: 4px;
+  }
+  .about-text { display: grid; gap: 20px; }
+  .about-text p { max-width: 50ch; font-size: 16px; }
+  .signature {
+    font-family: var(--serif); font-style: italic; font-size: 32px;
+    color: var(--green-deep); margin-top: 12px;
+  }
+  .about-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 32px;
+    padding-top: 28px; border-top: 1px solid var(--rule);
+  }
+  .about-stats .stat-n { font-family: var(--serif); font-size: 40px; font-weight: 300; line-height: 1; color: var(--green-deep);}
+  .about-stats .stat-l { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-top: 8px;}
+
+  /* Reviews */
+  .reviews-section { background: var(--bg-mist); }
+  .reviews-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 860px) { .reviews-strip { grid-template-columns: 1fr; } }
+  .review {
+    background: var(--bg);
+    border-radius: 18px;
+    padding: 32px;
+    display: grid; gap: 18px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 8px 28px -16px rgba(30, 36, 27, 0.18);
+    transition: transform .35s ease, box-shadow .35s ease;
+  }
+  .review:hover { transform: translateY(-4px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 16px 40px -20px rgba(30, 36, 27, 0.24); }
+  .stars { display: flex; gap: 3px; color: oklch(0.7 0.13 80); font-size: 14px; }
+  .review .body { font-family: var(--serif); font-size: 20px; line-height: 1.4; color: var(--ink); font-weight: 400; }
+  .review .meta { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+  .review .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--bg-deep);
+    font-family: var(--serif); font-size: 16px; color: var(--green-deep);
+  }
+  .review .who { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .review .when { font-size: 12px; color: var(--muted); }
+  .reviews-foot {
+    margin-top: 40px; display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+  .reviews-foot .agg { display: flex; align-items: baseline; gap: 14px; }
+  .reviews-foot .agg .num { font-family: var(--serif); font-size: 56px; font-weight: 300; line-height: 1; color: var(--green-deep);}
+  .reviews-foot .agg .det { font-size: 13px; color: var(--muted); }
+  .reviews-foot .agg .det b { display: block; color: var(--ink); font-weight: 500; }
+
+  /* Focus areas — round image cards */
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(40px, 5vw, 80px);
+  }
+  @media (max-width: 760px) {
+    .focus-grid { grid-template-columns: 1fr; gap: 56px; }
+  }
+  .focus-card {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: 24px;
+  }
+  .focus-card image-slot {
+    width: 180px; height: 180px;
+    background: var(--bg-mist);
+    box-shadow: 0 18px 40px -24px rgba(30, 36, 27, 0.35);
+  }
+  .focus-card h3 {
+    font-family: var(--serif); font-size: 30px; font-weight: 400; color: var(--ink);
+  }
+  .focus-card p {
+    color: var(--ink-soft); font-size: 15px; line-height: 1.6;
+    max-width: 36ch; text-wrap: pretty;
+  }
+
+  /* Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    grid-template-rows: 280px 280px;
+    gap: 18px;
+  }
+  .gallery image-slot {
+    width: 100%; height: 100%;
+    background: var(--bg-mist);
+    border: 1px solid var(--rule);
+  }
+  .gallery .g1 { grid-row: 1 / 3; }
+  .gallery .g2 { grid-row: 1 / 2; }
+  .gallery .g3 { grid-row: 1 / 2; }
+  .gallery .g4 { grid-row: 2 / 3; }
+  .gallery .g5 { grid-row: 2 / 3; }
+  @media (max-width: 860px) {
+    .gallery { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 220px); }
+    .gallery .g1, .gallery .g2, .gallery .g3, .gallery .g4, .gallery .g5 { grid-row: auto; grid-column: auto; }
+    .gallery .g1 { grid-column: 1 / 3; }
+  }
+
+  /* Visit / Book */
+  .visit-grid {
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+  }
+  @media (max-width: 860px) { .visit-grid { grid-template-columns: 1fr; } }
+  .visit-card {
+    background: var(--bg-deep);
+    border-radius: 18px;
+    padding: 40px;
+    display: grid; gap: 24px;
+  }
+  .visit-card h3 { font-family: var(--serif); font-size: 26px; }
+  .visit-info { display: grid; gap: 16px; }
+  .visit-row { display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid rgba(30, 36, 27, 0.08); }
+  .visit-row:last-child { border-bottom: 0; }
+  .visit-row .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+  .visit-row .v { font-size: 15px; color: var(--ink); }
+  .visit-row .v small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 4px;}
+  .map {
+    aspect-ratio: 4/3;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-deep);
+  }
+  .map svg { width: 100%; height: 100%; display: block; }
+  .map .pin {
+    position: absolute; left: 50%; top: 48%; transform: translate(-50%, -100%);
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+  }
+  .map .pin::before {
+    content: ""; position: absolute; inset: 0;
+    background: var(--green-deep);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 8px 18px -8px rgba(30, 36, 27, 0.4);
+  }
+  .map .pin::after {
+    content: ""; position: absolute; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--bg);
+  }
+  .map .pulse {
+    position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%);
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: oklch(0.45 0.05 145 / 0.18);
+    animation: pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+  }
+
+  /* Final CTA */
+  .final {
+    text-align: center;
+    padding: clamp(120px, 18vh, 220px) 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .final .wrap { position: relative; z-index: 1; }
+  .final h2 { font-size: clamp(48px, 8vw, 110px); max-width: 14ch; margin: 0 auto; font-weight: 300; }
+  .final p { margin: 28px auto 40px; max-width: 46ch; color: var(--ink-soft); font-size: 16.5px; }
+  .final .om {
+    font-family: var(--serif); font-size: 80px; font-weight: 300;
+    color: var(--green-deep); opacity: 0.45;
+    margin-bottom: 32px;
+    display: inline-block;
+  }
+
+  /* Footer */
+  footer {
+    padding: 64px var(--gutter) 40px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 40px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  @media (max-width: 760px) { footer { grid-template-columns: 1fr 1fr; } }
+  footer h4 { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); font-weight: 500; margin: 0 0 14px; }
+  footer a { color: var(--ink-soft); text-decoration: none; display: block; padding: 4px 0; }
+  footer a:hover { color: var(--green-deep); }
+  footer .mark { font-family: var(--serif); font-size: 26px; font-style: italic; color: var(--ink); margin-bottom: 12px; }
+  footer .credits { grid-column: 1 / -1; padding-top: 32px; margin-top: 16px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-size: 12px; flex-wrap: wrap; gap: 12px; }
+
+  /* Reveal */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.2s cubic-bezier(.16,1,.3,1), transform 1.2s cubic-bezier(.16,1,.3,1);
+    transition-delay: var(--rd, 0ms);
+  }
+  [data-reveal].in {
+    opacity: 1; transform: none;
+  }
+
+  /* Cursor breath dot (calm presence) */
+  .breath-dot {
+    position: fixed; top: 0; left: 0; pointer-events: none; z-index: 60;
+    width: 28px; height: 28px;
+    border: 1px solid var(--green-deep);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease, width .3s ease, height .3s ease;
+    mix-blend-mode: multiply;
+    opacity: 0;
+  }
+  @media (pointer: fine) { .breath-dot { opacity: 0.55; } }
+  .breath-dot.hover { width: 60px; height: 60px; opacity: 0.8; }
+
+</style>
+</head>
+<body>
+
+<div class="ambient"><i></i><i></i><i></i></div>
+<div class="breath-dot" id="breathDot"></div>
+
+<nav class="top" id="topnav">
+  <a href="#top" class="mark">Samādhi<span>by Victor</span></a>
+  <ul>
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#mobile">Mobile</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li class="cta-li"><a href="#book" class="book-cta">Book</a></li>
+  </ul>
+</nav>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="lotus lotus-bg" data-lotus="bg"></div>
+    <div class="hero-plate">
+      <image-slot id="hero-plate" shape="rect" placeholder="Drop a hero image · soft, low-light treatment room"></image-slot>
+    </div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-headline">
+          <div class="eyebrow" data-reveal>Samādhi Massage · By Victor</div>
+          <h1 data-reveal style="--rd: 120ms;">
+            <span class="word-row">A return to</span>
+            <span class="word-row"><em class="in-line">stillness</em>,</span>
+            <span class="word-row">held in body.</span>
+          </h1>
+          <div class="hero-meta" data-reveal style="--rd: 280ms;">
+            <p>Therapeutic bodywork in the tradition of presence — slow, attuned, restorative. In studio, or wherever you rest your body.</p>
+            <p>Sessions run 60 / 90 / 120 minutes, by appointment.</p>
+          </div>
+          <div class="hero-actions" data-reveal style="--rd: 420ms;">
+            <a class="btn primary" href="#book">
+              Book a session
+              <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn ghost" href="#services">View services</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-cue" data-reveal style="--rd: 600ms;">
+      <span class="line"></span>
+      Scroll · breathe
+    </div>
+  </section>
+
+  <!-- ornament -->
+  <div class="ornament-row">
+    <span class="line"></span>
+    <div class="lotus lotus-ornament" data-lotus="ornament"></div>
+    <span class="line"></span>
+  </div>
+
+  <!-- PHILOSOPHY -->
+  <section class="philosophy" id="philosophy">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">01 · Philosophy</div>
+          <h2 style="margin-top:18px;">Massage as quiet ceremony.</h2>
+        </div>
+        <div class="note">A practice rooted in slow listening — not technique alone.</div>
+      </div>
+      <div class="philosophy-grid">
+        <div class="pull" data-reveal>
+          <em>Samādhi</em> — <span style="font-style:italic;">समाधि</span> — the Sanskrit word for the deep, unbroken absorption that arrives when the body finally stops bracing.
+        </div>
+        <div class="meaning" data-reveal style="--rd: 200ms;">
+          <p>Each session is shaped around the body in front of me. I work without rush — long, considered strokes that follow the breath rather than a timer.</p>
+          <p>You arrive with whatever you're carrying. We leave a little more of it on the table.</p>
+          <p class="sanskrit">— a practice of presence, not performance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ornament -->
+  <div class="ornament-row">
+    <span class="line"></span>
+    <div class="lotus lotus-ornament" data-lotus="ornament"></div>
+    <span class="line"></span>
+  </div>
+
+  <!-- FOCUS AREAS -->
+  <section id="focus" class="tight">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">— · What I work with</div>
+          <h2 style="margin-top:18px;">Where the body asks for attention.</h2>
+        </div>
+        <div class="note">Every session adapts to what you bring in</div>
+      </div>
+
+      <div class="focus-grid">
+        <div class="focus-card" data-reveal>
+          <image-slot id="focus-full" shape="circle" placeholder="Full-body massage photo"></image-slot>
+          <h3>Full body</h3>
+          <p>A complete, unhurried session to release held tension, ease circulation, and return mobility after long days, physical effort, or weeks lived in a hurry. Shaped to the body in front of me.</p>
+        </div>
+        <div class="focus-card" data-reveal style="--rd:140ms;">
+          <image-slot id="focus-legs" shape="circle" placeholder="Legs and feet photo"></image-slot>
+          <h3>Legs &amp; feet</h3>
+          <p>Focused recovery for tired legs and sore feet — reducing muscle fatigue, lifting circulation, and helping the body land more softly into the next day. Especially useful after travel or long walks.</p>
+        </div>
+        <div class="focus-card" data-reveal style="--rd:280ms;">
+          <image-slot id="focus-back" shape="circle" placeholder="Back and shoulders photo"></image-slot>
+          <h3>Back &amp; shoulders</h3>
+          <p>Targeted work for back, neck, and shoulder tension carried from posture, screens, or daily load. Designed to soften stiffness and let the upper body breathe and move freely again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">02 · Services</div>
+          <h2 style="margin-top:18px;">Sessions, considered.</h2>
+        </div>
+        <div class="note">Pricing in CAD · Choose by feel, not formula</div>
+      </div>
+
+      <div class="services-list">
+        <div class="service" data-reveal>
+          <div class="num">01</div>
+          <div class="name">Therapeutic Bodywork<em>Signature</em></div>
+          <div class="desc">A grounding full-body session weaving Swedish flow with intentional deeper work — for everyday holding patterns, restless sleep, weeks lived in screens.</div>
+          <div class="price">$140<em>· 90 min</em></div>
+        </div>
+        <div class="service" data-reveal style="--rd:80ms;">
+          <div class="num">02</div>
+          <div class="name">Deep Tissue<em>Restorative</em></div>
+          <div class="desc">Specific, slow attention to chronic tension — shoulders, hips, low back. Pressure is conversational; never forced past the body's yes.</div>
+          <div class="price">$160<em>· 90 min</em></div>
+        </div>
+        <div class="service" data-reveal style="--rd:160ms;">
+          <div class="num">03</div>
+          <div class="name">Lomi Lomi<em>Flowing</em></div>
+          <div class="desc">Long, continuous forearm work in the Hawaiian tradition — closer to a tide than a treatment. Especially gentle for nervous-system recovery.</div>
+          <div class="price">$170<em>· 90 min</em></div>
+        </div>
+        <div class="service" data-reveal style="--rd:240ms;">
+          <div class="num">04</div>
+          <div class="name">Extended Session<em>Two hours</em></div>
+          <div class="desc">The signature, given room to unhurry. For travel days, post-injury recovery, or anyone whose nervous system needs a longer runway.</div>
+          <div class="price">$210<em>· 120 min</em></div>
+        </div>
+        <div class="service" data-reveal style="--rd:320ms;">
+          <div class="num">05</div>
+          <div class="name">Express<em>For drop-in</em></div>
+          <div class="desc">A focused hour for a specific area — neck and shoulders, or low back. Useful between full sessions.</div>
+          <div class="price">$95<em>· 60 min</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ornament -->
+  <div class="ornament-row">
+    <span class="line"></span>
+    <div class="lotus lotus-ornament" data-lotus="ornament"></div>
+    <span class="line"></span>
+  </div>
+
+  <!-- MOBILE -->
+  <section id="mobile" class="tight">
+    <div class="wrap">
+      <div class="mobile-block" data-reveal>
+        <div class="lotus lotus-block" data-lotus="block"></div>
+        <div class="deco"></div>
+        <div class="mobile-grid">
+          <div>
+            <div class="eyebrow">03 · Mobile Massage</div>
+            <h2 style="margin-top:18px;">I'll come to where you are.</h2>
+            <p style="margin-top:20px; max-width:46ch; font-size:16px;">Same considered session, set up in your home, hotel, or studio. I bring the table, the linens, the music — and the same hour of quiet you'd find in clinic.</p>
+            <a class="btn primary" style="margin-top:32px;" href="#book">
+              Request a home session
+              <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+          <ul class="mobile-bullets">
+            <li>Travels within a 20 km radius — beyond that, please ask.</li>
+            <li>Set-up takes ~10 minutes; all I need is a quiet room and a power outlet.</li>
+            <li>Couples / paired sessions available with prior notice.</li>
+            <li>Add-on of $25 to cover travel; included for booked extended sessions.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">04 · About</div>
+          <h2 style="margin-top:18px;">Hello — I'm Victor.</h2>
+        </div>
+        <div class="note">A practitioner first, a host second.</div>
+      </div>
+
+      <div class="about-grid">
+        <image-slot id="victor-portrait" class="about-portrait" shape="rounded" radius="6" data-reveal placeholder="Drop portrait of Victor · soft, candid"></image-slot>
+        <div class="about-text" data-reveal style="--rd: 200ms;">
+          <p>I've been practicing bodywork for over a decade — first in Brazil, where I trained, then in studios across South America before settling here. My background blends Swedish and deep-tissue technique with the slower, breath-led traditions I've returned to over the years.</p>
+          <p>What I care about most: that the hour belongs to you. No rushed intake, no upselling, no pressure to do more than you came for. Just careful, attentive work — and the time to actually feel it land.</p>
+          <p class="signature">— Victor</p>
+          <div class="about-stats">
+            <div><div class="stat-n">10+</div><div class="stat-l">Years practicing</div></div>
+            <div><div class="stat-n">2,400+</div><div class="stat-l">Sessions given</div></div>
+            <div><div class="stat-n">4.9★</div><div class="stat-l">Across Google reviews</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="practice" class="tight">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">— · Inside the practice</div>
+          <h2 style="margin-top:18px;">A few corners of the room.</h2>
+        </div>
+        <div class="note">Drag your own photos onto any tile</div>
+      </div>
+
+      <div class="gallery" data-reveal>
+        <image-slot id="g1" class="g1" shape="rounded" radius="6" placeholder="Treatment table · wide"></image-slot>
+        <image-slot id="g2" class="g2" shape="rounded" radius="6" placeholder="Oils · stones · tools"></image-slot>
+        <image-slot id="g3" class="g3" shape="rounded" radius="6" placeholder="Plants · light"></image-slot>
+        <image-slot id="g4" class="g4" shape="rounded" radius="6" placeholder="Hands at work"></image-slot>
+        <image-slot id="g5" class="g5" shape="rounded" radius="6" placeholder="A quiet detail"></image-slot>
+      </div>
+    </div>
+  </section>
+
+  <!-- ornament -->
+  <div class="ornament-row">
+    <span class="line"></span>
+    <div class="lotus lotus-ornament" data-lotus="ornament"></div>
+    <span class="line"></span>
+  </div>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="reviews-section">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">05 · Reviews</div>
+          <h2 style="margin-top:18px;">From people who've been on the table.</h2>
+        </div>
+        <div class="note">Verified Google reviews · last 12 months</div>
+      </div>
+
+      <div class="reviews-strip">
+        <article class="review" data-reveal>
+          <div class="stars">★★★★★</div>
+          <p class="body">"Easily the most thoughtful massage I've had in years. Victor reads the body without you having to say much — I left feeling about ten pounds lighter."</p>
+          <div class="meta">
+            <div class="avatar">M</div>
+            <div><div class="who">Marina S.</div><div class="when">2 weeks ago · Google</div></div>
+          </div>
+        </article>
+        <article class="review" data-reveal style="--rd:120ms;">
+          <div class="stars">★★★★★</div>
+          <p class="body">"Booked the mobile session after a long flight. He arrived on time, set everything up so gently, and ninety minutes later I could turn my head again. Worth every cent."</p>
+          <div class="meta">
+            <div class="avatar">D</div>
+            <div><div class="who">David L.</div><div class="when">1 month ago · Google</div></div>
+          </div>
+        </article>
+        <article class="review" data-reveal style="--rd:240ms;">
+          <div class="stars">★★★★★</div>
+          <p class="body">"There's a quietness to the way he works that's rare. It doesn't feel like a transaction. I've sent three friends and they've all rebooked."</p>
+          <div class="meta">
+            <div class="avatar">A</div>
+            <div><div class="who">Aïsha R.</div><div class="when">2 months ago · Google</div></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="reviews-foot" data-reveal>
+        <div class="agg">
+          <div class="num">4.9</div>
+          <div class="det">
+            <b>★★★★★</b>
+            Based on 87 Google reviews
+          </div>
+        </div>
+        <a class="btn ghost" href="#" target="_blank" rel="noopener">
+          Read all reviews on Google
+          <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- VISIT -->
+  <section id="book">
+    <div class="wrap">
+      <div class="sec-head" data-reveal>
+        <div>
+          <div class="eyebrow">06 · Visit & book</div>
+          <h2 style="margin-top:18px;">Two ways to begin.</h2>
+        </div>
+        <div class="note">Bookings handled personally — no platform in between</div>
+      </div>
+
+      <div class="visit-grid">
+        <div class="visit-card" data-reveal>
+          <h3>In studio</h3>
+          <div class="visit-info">
+            <div class="visit-row">
+              <div class="k">Where</div>
+              <div class="v">Calm Studio · West End<small>Exact address shared on booking confirmation</small></div>
+            </div>
+            <div class="visit-row">
+              <div class="k">Hours</div>
+              <div class="v">Tue – Sat, 10:00 — 19:00<small>Sundays by request</small></div>
+            </div>
+            <div class="visit-row">
+              <div class="k">Reach</div>
+              <div class="v">WhatsApp · +1 (000) 000-0000<small>Replies within a few hours, every day</small></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="btn primary" href="#" target="_blank" rel="noopener">
+              Message on WhatsApp
+              <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn ghost" href="#">Open in Google Maps</a>
+          </div>
+        </div>
+
+        <div class="map" data-reveal style="--rd:180ms;">
+          <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M40 0H0v40" fill="none" stroke="rgba(30,36,27,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="400" height="300" fill="oklch(0.91 0.025 130)"/>
+            <rect width="400" height="300" fill="url(#grid)"/>
+            <!-- streets -->
+            <path d="M0 120 L400 100" stroke="oklch(0.85 0.02 130)" stroke-width="14" fill="none"/>
+            <path d="M180 0 L210 300" stroke="oklch(0.85 0.02 130)" stroke-width="10" fill="none"/>
+            <path d="M0 220 L400 230" stroke="oklch(0.85 0.02 130)" stroke-width="8" fill="none"/>
+            <!-- park -->
+            <ellipse cx="320" cy="200" rx="60" ry="36" fill="oklch(0.84 0.06 140)"/>
+            <ellipse cx="60" cy="60" rx="40" ry="30" fill="oklch(0.84 0.06 140)"/>
+          </svg>
+          <div class="pulse"></div>
+          <div class="pin"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final tight">
+    <div class="lotus lotus-final" data-lotus="final"></div>
+    <div class="wrap" data-reveal>
+      <div class="om">ॐ</div>
+      <h2>An hour you'll feel for days.</h2>
+      <p>Reserve a session below, or send a short note about what your body's been carrying. I'll write back.</p>
+      <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+        <a class="btn primary" href="#">
+          Reserve a session
+          <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn ghost" href="#">Write Victor a note</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <div class="mark">Samādhi</div>
+    <p style="max-width:34ch; color:var(--muted); font-size:13px;">Massage by Victor — a small, personal practice rooted in slow, attentive bodywork.</p>
+  </div>
+  <div>
+    <h4>Visit</h4>
+    <a href="#book">In studio</a>
+    <a href="#mobile">Mobile sessions</a>
+    <a href="#book">Hours</a>
+  </div>
+  <div>
+    <h4>Reach</h4>
+    <a href="#">WhatsApp</a>
+    <a href="#">Email</a>
+    <a href="#">Instagram</a>
+  </div>
+  <div>
+    <h4>Practice</h4>
+    <a href="#philosophy">Philosophy</a>
+    <a href="#services">Services</a>
+    <a href="#about">About Victor</a>
+  </div>
+  <div class="credits">
+    <span>© 2026 Samādhi Massage by Victor · All rights reserved.</span>
+    <span>Built with care.</span>
+  </div>
+</footer>
+
+<!-- Tweak defaults — read & rewritten by host on changes -->
+<div id="tweaks-root"></div>
+<script>
+  window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "palette": "moss",
+    "displayFont": "Cormorant Garamond",
+    "headline": "arrive",
+    "motion": true,
+    "ambientGlow": true,
+    "grain": true,
+    "mandalas": true,
+    "mandalaSpeed": "slow"
+  }/*EDITMODE-END*/;
+</script>
+
+<script src="image-slot.js"></script>
+
+<!-- React + Babel for the Tweaks panel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks-app.jsx"></script>
+
+<!-- Vanilla scroll/reveal -->
+<script>
+  // Build a 2D lotus mandala — 8-petal flower with pointed petals + hex core.
+  // Whole flower lives inside one rotor <g> so it turns as a single piece.
+  function makeLotus() {
+    const NS = 'http://www.w3.org/2000/svg';
+    const cx = 200, cy = 200;
+
+    // Pointed lotus petal (cubic Bezier almond/leaf), tip up the page.
+    function petalPath(tip, halfW, base) {
+      const tipY = cy - tip;
+      const baseY = cy - base;
+      const cpInY  = baseY - (baseY - tipY) * 0.15;
+      const cpOutY = tipY  + (baseY - tipY) * 0.35;
+      return `M ${cx},${baseY} `
+        + `C ${cx - halfW * 0.6},${cpInY} ${cx - halfW},${cpOutY} ${cx},${tipY} `
+        + `C ${cx + halfW},${cpOutY} ${cx + halfW * 0.6},${cpInY} ${cx},${baseY} Z`;
+    }
+
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 400 400');
+    svg.setAttribute('aria-hidden', 'true');
+
+    const rotor = document.createElementNS(NS, 'g');
+    rotor.setAttribute('class', 'rotor');
+    svg.appendChild(rotor);
+
+    // Three nested rings of 8 pointed petals, alternating offset so petals
+    // interlock between each other (8 outer points, 8 mid points, 8 inner).
+    const rings = [
+      { count: 8, tip: 180, w: 58, base: 22, offset: 0,    thin: false },
+      { count: 8, tip: 130, w: 44, base: 18, offset: 22.5, thin: false },
+      { count: 8, tip: 78,  w: 28, base: 14, offset: 0,    thin: true  },
+    ];
+
+    rings.forEach((ring) => {
+      const d = petalPath(ring.tip, ring.w, ring.base);
+      for (let p = 0; p < ring.count; p++) {
+        const angle = (360 / ring.count) * p + ring.offset;
+        const petal = document.createElementNS(NS, 'path');
+        petal.setAttribute('d', d);
+        petal.setAttribute('transform', `rotate(${angle} ${cx} ${cy})`);
+        petal.setAttribute('class', 'petal' + (ring.thin ? ' thin' : ''));
+        rotor.appendChild(petal);
+      }
+    });
+
+    // Hex core (pointy-top regular hexagon)
+    function hexPoints(r) {
+      const pts = [];
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 3) * i - Math.PI / 2;
+        pts.push(`${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`);
+      }
+      return pts.join(' ');
+    }
+    const hex = document.createElementNS(NS, 'polygon');
+    hex.setAttribute('points', hexPoints(22));
+    hex.setAttribute('class', 'petal');
+    rotor.appendChild(hex);
+    const hexInner = document.createElementNS(NS, 'polygon');
+    hexInner.setAttribute('points', hexPoints(12));
+    hexInner.setAttribute('class', 'petal thin');
+    rotor.appendChild(hexInner);
+
+    // Center dot
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', String(cx));
+    dot.setAttribute('cy', String(cy));
+    dot.setAttribute('r', '3');
+    dot.setAttribute('class', 'dot');
+    rotor.appendChild(dot);
+
+    return svg;
+  }
+
+  document.querySelectorAll('.lotus').forEach((el) => {
+    el.appendChild(makeLotus());
+  });
+
+  // Nav scrolled state
+  const nav = document.getElementById('topnav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 24) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }, { passive: true });
+
+  // Reveal-on-scroll
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  const revealAll = () => revealEls.forEach(el => el.classList.add('in'));
+  // If the document is hidden at load (preview/screenshot context),
+  // IntersectionObserver callbacks won't fire — show everything immediately.
+  if (document.visibilityState === 'hidden') {
+    revealAll();
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(el => io.observe(el));
+    // Safety net: anything still hidden after 1.5s gets shown anyway.
+    setTimeout(() => {
+      document.querySelectorAll('[data-reveal]:not(.in)').forEach(el => el.classList.add('in'));
+    }, 1500);
+    // If user tabs back in before the timer, force reveal anything stuck.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') revealAll();
+    });
+  }
+
+  // Hero parallax (on the image-slot inside the hero plate)
+  const plate = document.querySelector('.hero-plate image-slot');
+  window.addEventListener('scroll', () => {
+    if (!plate) return;
+    const y = Math.min(window.scrollY, 800);
+    plate.style.setProperty('--parallax', (y * 0.18) + 'px');
+  }, { passive: true });
+
+  // Breath cursor dot
+  const dot = document.getElementById('breathDot');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let dx = mx, dy = my;
+  window.addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; });
+  function tick() {
+    dx += (mx - dx) * 0.12;
+    dy += (my - dy) * 0.12;
+    dot.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+  document.querySelectorAll('a, button, .service, .review').forEach(el => {
+    el.addEventListener('mouseenter', () => dot.classList.add('hover'));
+    el.addEventListener('mouseleave', () => dot.classList.remove('hover'));
+  });
+</script>
+
+</body>
+</html>
