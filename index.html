@@ -108,6 +108,19 @@
     .lotus-bg { width: 140vw; height: 140vw; right: -50vw; top: -10vh; opacity: 0.12; }
   }
 
+  /* Visible rotating lotus on the hero's left empty space */
+  .lotus-hero-left {
+    left: 4vw;
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(280px, 32vw, 520px);
+    height: clamp(280px, 32vw, 520px);
+    opacity: 0.32;
+    z-index: 1;
+  }
+  .lotus-hero-left .rotor { animation-duration: 180s; }
+  @media (max-width: 900px) { .lotus-hero-left { display: none; } }
+
   .lotus-ornament {
     position: relative; width: 92px; height: 92px;
     margin: 0 auto;
@@ -654,8 +667,9 @@
 
   <section class="hero">
     <div class="lotus lotus-bg" data-lotus="bg" aria-hidden="true"></div>
+    <div class="lotus lotus-hero-left" data-lotus="hero-left" aria-hidden="true"></div>
     <div class="hero-plate" aria-hidden="true">
-      <div class="img"><img src="images/hero.jpg" alt="" loading="eager"></div>
+      <div class="img"><img src="images/massage_bed.png" alt="" loading="eager"></div>
     </div>
     <div class="wrap">
       <div class="hero-grid">
@@ -825,7 +839,7 @@
       </div>
 
       <div class="about-grid">
-        <div class="img rounded about-portrait" data-reveal><img src="images/focus-full.png" alt="Victor at work" loading="lazy"></div>
+        <div class="img rounded about-portrait" data-reveal><img src="images/Victor.png" alt="Portrait of Victor" loading="lazy"></div>
         <div class="about-text" data-reveal style="--rd: 200ms;">
           <p>I've been practicing recovery massage for years — blending Oriental and Classical technique with the slower, breath-led traditions I've returned to over the years. Based in Caminha, on the Portuguese coast, where the Camino passes through.</p>
           <p>What I care about most: that the hour belongs to you. No rushed intake, no upselling, no pressure to do more than you came for. Just careful, attentive work — and the time to actually feel it land.</p>
